@@ -10,11 +10,13 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Descriptor;
 import hudson.model.listeners.ItemListener;
+import hudson.model.Run;
 import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
+import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
@@ -159,7 +161,7 @@ public class SlackNotifier extends Notifier {
         return BuildStepMonitor.NONE;
     }
 
-    public SlackService newSlackService(AbstractBuild r, BuildListener listener) {
+    public SlackService newSlackService(Run<?, ?> r, TaskListener listener) {
         String teamDomain = this.teamDomain;
         if (StringUtils.isEmpty(teamDomain)) {
             teamDomain = getDescriptor().getTeamDomain();
@@ -497,7 +499,7 @@ public class SlackNotifier extends Notifier {
                 }
 
                 SlackNotifier slackNotifier = p.getPublishersList().get(SlackNotifier.class);
-                
+
                 if (slackNotifier == null) {
                     logger.info(String
                             .format("Configuration does not have a notifier for \"%s\", not migrating settings",
@@ -514,9 +516,9 @@ public class SlackNotifier extends Notifier {
                     if (StringUtils.isBlank(slackNotifier.room)) {
                         slackNotifier.room = slackJobProperty.getRoom();
                     }
-                    
+
                     slackNotifier.startNotification = slackJobProperty.getStartNotification();
-    
+
                     slackNotifier.notifyAborted = slackJobProperty.getNotifyAborted();
                     slackNotifier.notifyFailure = slackJobProperty.getNotifyFailure();
                     slackNotifier.notifyNotBuilt = slackJobProperty.getNotifyNotBuilt();
@@ -524,7 +526,7 @@ public class SlackNotifier extends Notifier {
                     slackNotifier.notifyUnstable = slackJobProperty.getNotifyUnstable();
                     slackNotifier.notifyBackToNormal = slackJobProperty.getNotifyBackToNormal();
                     slackNotifier.notifyRepeatedFailure = slackJobProperty.getNotifyRepeatedFailure();
-    
+
                     slackNotifier.includeTestSummary = slackJobProperty.includeTestSummary();
                     slackNotifier.commitInfoChoice = slackJobProperty.getShowCommitList() ? CommitInfoChoice.AUTHORS_AND_TITLES : CommitInfoChoice.NONE;
                     slackNotifier.includeCustomMessage = slackJobProperty.includeCustomMessage();

@@ -88,9 +88,9 @@ public class ActiveNotifier implements FineGrainedNotifier {
     public void completed(Run<?, ?> r) {
         Result result = r.getResult();
         Run<?, ?> previousBuild = r.getPreviousBuild();
-        do {
+        while (previousBuild != null && previousBuild.getResult() == Result.ABORTED) {
             previousBuild = previousBuild.getPreviousCompletedBuild();
-        } while (previousBuild != null && previousBuild.getResult() == Result.ABORTED);
+        }
         Result previousResult = (previousBuild != null) ? previousBuild.getResult() : Result.SUCCESS;
         if ((result == Result.ABORTED && notifier.getNotifyAborted())
                 || (result == Result.FAILURE //notify only on single failed build
